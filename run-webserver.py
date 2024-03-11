@@ -6,8 +6,8 @@ app = Flask(__name__)
 def index():
     return "<p>Hello!</p>"
 
-@app.route('/')
-def index():
+@app.route('/animatecircle')
+def animatecircle():
     return render_template('animateCircles-v1.html')
 
 if __name__ == '__main__':
