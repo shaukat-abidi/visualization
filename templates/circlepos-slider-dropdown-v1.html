@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+ 
+<head>
+    <meta charset="utf-8">
+ 
+    <!-- Load d3.js -->
+    <script src=https://d3js.org/d3.v4.js></script>
+ 
+    <!-- Create a div where the graph will take place -->
+    <div id="my_dataviz"></div>
+    <style>
+        /* Optional: Add some styling to improve visual appearance */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* Ensure that the content covers the entire viewport height */
+        }
+ 
+        .container {
+            flex-grow: 1;
+            /* Make the container grow to fill the available space */
+        }
+ 
+        .slider-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        
+        .dropdown-container {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+ 
+        input[type="range"] {
+            width: 80%;
+            margin: 0 10%;
+        }
+ 
+        span {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+ 
+    <div class="container">
+      <!-- Your main content goes here -->
+    </div>
+ 
+    <div class="slider-container">
+      <span>Year: <span id="selectedYear">1970</span></span>
+      <input type="range" min="1970" max="2000" step="10" value="1970" id="yearSlider">
+     
+    </div>
+
+    <div class="dropdown-container">
+    <!-- Dropdown button -->
+        <span>Region</span>
+        <select id="dropdown">
+        <option value="o1">Liverpool Hospital</option>
+        <option value="o2">Camden Hospital</option>
+        <option value="o3">Bankstown Hospital</option>
+        <option value="o4">Strathfield Hospital</option>
+        </select>
+    </div>
+ 
+    <script>
+    // Your D3.js script
+    const dropdown = d3.select("#dropdown");
+    const slider = d3.select("#yearSlider");
+    const chartContainer = d3.select("#chartContainer");
+
+    // Initial values
+    let selectedOption = dropdown.node().value;
+    let selectedYear = slider.node().value;
+
+    // Event listeners for dropdown and slider changes
+    dropdown.on("change", () => {
+        selectedOption = dropdown.node().value;
+        selectedYear = slider.node().value;
+        // updateChart();
+        console.log("Year Selected: " + selectedYear);
+        console.log("Option Selected: " + selectedOption);
+    });
+
+    slider.on("input", () => {
+        selectedOption = dropdown.node().value;
+        selectedYear = slider.node().value;
+        console.log("Year Selected: " + selectedYear);
+        console.log("Option Selected: " + selectedOption);
+        // updateChart();
+    });
+        
+    </script>
+</body>
+
