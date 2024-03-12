@@ -13,6 +13,17 @@
   <style>
     #map {
       height: 800px;
+      z-index: 1; /* Set a lower z-index for the map */
+    }
+    
+    #barChartlegends {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: navy;
+      padding: 15px;
+      font-weight: bold;
+      z-index: 2; /* Set a higher z-index for the map */
     }
   </style>
 </head>
@@ -21,6 +32,13 @@
 
 
   <div id="map"></div>
+  <div id="barChartlegends">
+    <!-- Add your legend content here -->
+    <span style="color: chartreuse;">---- English </span><br>
+    <span style="color: magenta;">---- Arabic </span><br>
+    <span style="color: yellow;">---- Chinese </span><br>
+    <!-- Add more legends as needed -->
+  </div>
   <select id="year" onchange="updateMap()">
     <option value="2020">2020</option>
     <option value="2021">2021</option>
@@ -77,6 +95,7 @@
         {
           data: plotScaledData,
           labels: unscaledData.map(String),
+          colors: ['chartreuse', 'magenta', 'yellow'],
           maxValues: maxValue
         }
       );
@@ -97,6 +116,7 @@
           {
             data: plotScaledData,
             labels: unscaledData.map(String),
+            colors: ['chartreuse', 'magenta', 'yellow']
           }
         );
       }
