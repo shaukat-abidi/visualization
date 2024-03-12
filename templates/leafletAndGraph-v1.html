@@ -10,7 +10,7 @@
 
   <style>
     #map {
-      height: 400px;
+      height: 800px;
     }
   </style>
 </head>
@@ -25,11 +25,11 @@
 
     // Let us generate fake data
     function fakeData() {
-    return [Math.random(), Math.random(), Math.random()];
+    return [Math.random(), Math.random()];
     }
 
     // Create a barchart
-    var myBarChart = L.minichart(center, {data: fakeData()});
+    var myBarChart = L.minichart(center, {data: fakeData(), labels: ["A", "B"]});
     mymap.addLayer(myBarChart);
 
     // Update data every 2 seconds
