@@ -21,7 +21,7 @@ def sliderdropdown():
 
 @app.route('/leafletmap')
 def leafletmap():
-    return render_template('leafletAndGraph-v2.html')
+    return render_template('leafletAndGraph-v3.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
