@@ -1,118 +1,31 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
+  <meta charset="utf-8">
+
+  <!-- Load d3.js and the geo projection plugin -->
+  <script src="https://d3js.org/d3.v6.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+  <!-- Load Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6/dist/leaflet.css" media="screen" title="leaflet">
+  <script src="https://unpkg.com/leaflet@1.6/dist/leaflet.js" charset="utf-8"></script>
+
   <style>
-    .bar {
-      fill: steelblue;
-    }
-
-    .highlight {
-      fill: orange;
-    }
-
     #mapid {
       height: 400px;
     }
   </style>
-  <script src="https://d3js.org/d3.v4.min.js"></script>
-  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
-  
 </head>
 
 <body>
-  <!-- Load Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-    crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-    integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-    crossorigin=""></script>
-    <div id="mapid"></div>
-  <script>
-    // mapid is the id of the div where the map will appear
-    var map = L
-      .map('mapid')
-      .setView([47, 2], 5);   // center position + zoom
+  <!-- Create an element where the map will take place -->
+  <div id="mapid"></div>
 
-    // Add a tile to the map = a background. Comes from OpenStreetmap
-    L.tileLayer(
-      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-      maxZoom: 6,
-    }).addTo(map);
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 
-    // Add a svg layer to the map
-    L.svg().addTo(map);
-
-    // Create data for circles:
-    var markers = [
-      { long: 9.083, lat: 42.149 }, // corsica
-      { long: 7.26, lat: 43.71 }, // nice
-      { long: 2.349, lat: 48.864 }, // Paris
-      { long: -1.397, lat: 43.664 }, // Hossegor
-      { long: 3.075, lat: 50.640 }, // Lille
-      { long: -3.83, lat: 48 }, // Morlaix
-    ];
-
-    // Select the svg area and add circles (Checking):
-    d3.select("#mapid")
-      .select("svg")
-      .selectAll("myCircles")
-      .data(markers)
-      .enter()
-      .append("circle")
-      .on("mouseover", onMouseOver) //Add listener for the mouseover event
-      .on("mouseout", onMouseOut)   //Add listener for the mouseout event
-      .attr("cx", function (d) { return map.latLngToLayerPoint([d.lat, d.long]).x })
-      .attr("cy", function (d) { return map.latLngToLayerPoint([d.lat, d.long]).y })
-      .attr("r", 14)
-      .style("fill", "red")
-      .attr("stroke", "red")
-      .attr("stroke-width", 3)
-      .attr("fill-opacity", .4)
-
-    // Function that update circle position if something change
-    function update() {
-      d3.selectAll("circle")
-        .attr("cx", function (d) { return map.latLngToLayerPoint([d.lat, d.long]).x })
-        .attr("cy", function (d) { return map.latLngToLayerPoint([d.lat, d.long]).y })
-    }
-
-    function onMouseOver(d, i) {
-
-      d3.select(this).attr('class', 'bar');
-      d3.selectAll("circle")
-        .transition()
-        .duration(400)
-        .attr("cx", function (d) { return map.latLngToLayerPoint([d.lat, d.long]).x })
-        .attr("cy", function (d) { return map.latLngToLayerPoint([d.lat, d.long]).y })
-        .attr("r", 14)
-        .style("fill", "green")
-        .attr("stroke", "green")
-        .attr("stroke-width", 3)
-        .attr("fill-opacity", .4);
-    }
-
-    function onMouseOut(d, i) {
-      d3.select(this).attr('class', 'bar');
-      d3.select(this)
-        .transition()
-        .duration(400)
-        .attr('width', x.bandwidth())
-        .attr("y", function (d) { return y(d.value); })
-        .attr("height", function (d) { return height - y(d.value); });
-
-      d3.selectAll('.val')
-        .remove()
-    }
-
-    // If the user change the map (zoom or drag), I update circle position:
-    map.on("moveend", update)
-
-
-  </script>
 </body>
 
 </html>

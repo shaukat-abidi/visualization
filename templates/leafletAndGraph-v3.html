@@ -14,9 +14,10 @@
   <style>
     #map {
       height: 800px;
-      z-index: 1; /* Set a lower z-index for the map */
+      z-index: 1;
+      /* Set a lower z-index for the map */
     }
-    
+
     #barChartlegends {
       position: absolute;
       top: 10px;
@@ -24,7 +25,8 @@
       background-color: navy;
       padding: 15px;
       font-weight: bold;
-      z-index: 2; /* Set a higher z-index for the map */
+      z-index: 2;
+      /* Set a higher z-index for the map */
     }
   </style>
 </head>
@@ -40,10 +42,44 @@
     <span style="color: yellow;">---- Chinese </span><br>
     <!-- Add more legends as needed -->
   </div>
-  <select id="year" onchange="updateMap()">
-    <option value="2020">2020</option>
-    <option value="2021">2021</option>
-  </select>
+
+  <div>
+    Select Year: 
+    <select id="year" onchange="updateMap()">
+      <option value="2020">2020</option>
+      <option value="2021">2021</option>
+    </select>
+  </div>
+
+  <div>
+    Select Traits: 
+    <select id="attributes">
+      <option value="attr-1">Language</option>
+      <option value="attr-2">Gender</option>
+      <option value="attr-3">Nationality</option>
+    </select>
+  </div>
+
+  <div>
+    Select Location: 
+      <input type="checkbox" name="loc-1">
+      <label for="loc-1">Location 1</label>
+      
+      <input type="checkbox" name="loc-2">
+      <label for="loc-2">Location 2</label>
+      
+      <input type="checkbox" name="loc-3">
+      <label for="loc-3">Location 3</label>
+      
+      <input type="checkbox" name="loc-4">
+      <label for="loc-4">Location 4</label>
+      
+      <input type="checkbox" name="loc-5">
+      <label for="loc-5">Location 5</label>
+  </div>
+
+  
+
 
   <script>
     /* ******************************* */
@@ -81,10 +117,10 @@
       ext: 'png'
     });
     Stadia_AlidadeSmoothDark.addTo(mymap);
-    
+
     /* Adding GEOJSON Obj*/
     L.geoJSON(liverpoolPolygon, {
-      onEachFeature: function(feature, layer){
+      onEachFeature: function (feature, layer) {
         layer.bindPopup(feature.properties.name)
       }
     }).addTo(mymap);
