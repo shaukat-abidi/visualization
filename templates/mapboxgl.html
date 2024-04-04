@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>3D Bar Graph on Mapbox GL JS</title>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2hhdWthdC1hYmVkaSIsImEiOiJjbHU5MTNtdHcwNTRpMmtwNnpyNmM4ZHBuIn0.AAil2LfhX43xDbeoDeuI4A';
+
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/light-v10',
+  center: [-74.5, 40], // Center the map on New York City
+  zoom: 9
+});
+
+map.on('load', function () {
+  map.addLayer({
+    'id': '3d-bars',
+    'type': 'fill-extrusion',
+    'source': {
+      'type': 'geojson',
+      'data': {
+        'type': 'FeatureCollection',
+        'features': [
+          {
+            'type': 'Feature',
+            'properties': {
+              'height': 100 // Height of the first bar
+            },
+            'geometry': {
+              'type': 'Polygon',
+              'coordinates': [[
+                [-74.0, 40.7],
+                [-73.9, 40.7],
+                [-73.9, 40.8],
+                [-74.0, 40.8],
+                [-74.0, 40.7]
+              ]]
+            }
+          },
+          // Add more features for additional bars with different heights
+          {
+            'type': 'Feature',
+            'properties': {
+              'height': 150 // Height of the second bar
+            },
+            'geometry': {
+              'type': 'Polygon',
+              'coordinates': [[
+                [-73.95, 40.75],
+                [-73.85, 40.75],
+                [-73.85, 40.85],
+                [-73.95, 40.85],
+                [-73.95, 40.75]
+              ]]
+            }
+          }
+          // Add more features as needed
+        ]
+      }
+    },
+    'paint': {
+      'fill-extrusion-color': '#FF6347',
+      'fill-extrusion-height': ['get', 'height'],
+      'fill-extrusion-base': 0,
+      'fill-extrusion-opacity': 0.8
+    }
+  });
+});
+</script>
+
+</body>
+</html>

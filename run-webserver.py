@@ -1,4 +1,6 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, jsonify
+import json
+import csv
 
 app = Flask(__name__)
 
@@ -14,6 +16,13 @@ def animatecircle():
 def slider():
     return render_template('circleposAndSlider-v1.html')
 
+@app.route('/forceDirectedGraph')
+def forceDirectedGraph():
+    return render_template('forceDirectedGraph.html')
+
+@app.route('/sankeyComponent')
+def sankeyComponent():
+    return render_template('sankeyComponent.html')
 
 @app.route('/sliderdropdown')
 def sliderdropdown():
@@ -29,11 +38,26 @@ def leafletd3():
 
 @app.route('/test')
 def test():
-    return render_template('test.html')
+    return render_template('mapboxgl.html')
 
 @app.route('/data/<path:filename>')
 def download_file(filename):
     return send_from_directory('static', filename)
+
+@app.route('/jsondata')
+def get_jsondata():
+    with open('static/energy.json') as json_file:
+        data = json.load(json_file)
+    return jsonify(data)
+
+@app.route('/csvdata')
+def get_csvdata():
+    data = []
+    with open('static/energy.csv', newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            data.append(row)
+    return data
 
 if __name__ == '__main__':
     app.run(debug=True)
