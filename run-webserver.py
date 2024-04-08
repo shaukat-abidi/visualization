@@ -8,6 +8,14 @@ app = Flask(__name__)
 def index():
     return "<p>Hello!</p>"
 
+@app.route('/animatedTreemap')
+def animatedTreemap():
+    return render_template('animatedTreemap.html')
+
+@app.route('/loadDataFetchApi')
+def loadDataFetchApi():
+    return render_template('loadDataFetchApi.html')
+
 @app.route('/animatecircle')
 def animatecircle():
     return render_template('animateCircles-v1.html')
