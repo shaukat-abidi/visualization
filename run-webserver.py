@@ -30,7 +30,7 @@ def forceDirectedGraph():
 
 @app.route('/sankeyComponent')
 def sankeyComponent():
-    return render_template('sankeyComponent.html')
+    return render_template('sankeyPlot.html')
 
 @app.route('/sliderdropdown')
 def sliderdropdown():
@@ -54,7 +54,7 @@ def download_file(filename):
 
 @app.route('/jsondata')
 def get_jsondata():
-    with open('static/energy.json') as json_file:
+    with open('static/sankeyDataMed.json') as json_file:
         data = json.load(json_file)
     return jsonify(data)
 
