@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <!-- Load the sankey.js function -->
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/sankey.js"></script>
+
+    <!-- Create a div where the graph will take place -->
+    <div id="year_placeholder"></div>
+    <div id="my_dataviz"></div>
+
+    <!-- Add style to links or they won't appear properly-->
+    <style>
+        #year_placeholder {
+            color: blue;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;  
+        }
+
+        .link {
+            fill: none;
+            stroke: #000;
+            stroke-opacity: .2;
+        }
+
+        .link:hover {
+            stroke-opacity: .5;
+        }
+
+    </style>
+</head>
+
+<body>
+    <script>
+
+        var onDataLoaded = new Event('dataLoaded'); // Create a custom event
+
+        var margin = { top: 10, right: 10, bottom: 10, left: 10 };
+        var width = 1000 - margin.left - margin.right;
+        var height = 700 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#my_dataviz").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // Color scale used
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        // Set the sankey diagram properties
+        var sankey = d3.sankey().nodeWidth(15).nodePadding(10).size([width, height]);
+
+
+        d3.json("/jsondata", function (error, data) {
+            if (error) throw error;
+            yearlyData = data; // Set the global variable
+            window.dispatchEvent(onDataLoaded); // Dispatch the event once data is loaded
+        });
+
+        window.addEventListener('dataLoaded', function () {
+            initializeSankey(); // Initialize when data is loaded
+
+            
+            var currentYear = 2005;
+            var interval = setInterval(function () {
+                currentYear++;
+                if (currentYear > 2010) {
+                    clearInterval(interval); // Stop the animation after 2009
+                } else {
+                    updateSankey(currentYear);
+                }
+            }, 5000); // Update every 2000 milliseconds (2 seconds)
+            
+
+        });
+
+        function updateSankey(year) {
+            //Update Year
+            d3.select("#year_placeholder").text(year);
+
+            var graph = yearlyData[year];
+
+            // Update the Sankey diagram's nodes and links
+            sankey.nodes(graph.nodes).links(graph.links).layout(1);
+
+            // Re-select and re-bind the link data
+            var link = svg.selectAll(".link")
+                .data(graph.links, function (d) { return d.source.name + "-" + d.target.name; });  // Use a unique identifier for each link
+
+            // Transition exiting links
+            link.exit().transition()
+                .duration(750)
+                .attr("stroke-opacity", 0)
+                .remove();
+
+            // Transition entering links
+            link.enter().append("path")
+                .attr("class", "link")
+                .style("stroke-width", function (d) { return Math.max(1, d.dy); })
+                .style("stroke", function(d){return d.source.color;})
+                .sort(function (a, b) { return b.dy - a.dy; })
+                .transition()
+                .duration(750)
+                .attr("d", sankey.link());
+            
+            
+            // Update existing links
+            link.transition()
+                .duration(750)
+                .attr("d", sankey.link())
+                .style("stroke-width", function (d) { return Math.max(1, d.dy); })
+                .style("mix-blend-mode", "multiply");
+
+            // set link color
+            //svg.selectAll(".link").style("stroke", function(d){return d.source.color;});
+
+
+            
+        }
+
+
+        function initializeSankey() {
+            //Update Year
+            d3.select("#year_placeholder").text(2005);
+            
+            var graph = yearlyData[2005];
+            console.log(graph);
+            sankey
+                .nodes(graph.nodes)
+                .links(graph.links)
+                .layout(1);
+
+            // add in the links
+            var link = svg.append("g")
+                .selectAll(".link")
+                .data(graph.links)
+                .enter()
+                .append("path")
+                .attr("class", "link")
+                .attr("d", sankey.link())
+                .style("stroke-width", function (d) { return Math.max(1, d.dy); })
+                .sort(function (a, b) { return b.dy - a.dy; });
+
+            // add in the nodes
+            var node = svg.append("g")
+                .selectAll(".node")
+                .data(graph.nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
+                .call(d3.drag()
+                    .subject(function (d) { return d; })
+                    .on("start", function () { this.parentNode.appendChild(this); })
+                    .on("drag", dragmove));
+
+            // add the rectangles for the nodes
+            node
+                .append("rect")
+                .attr("height", function (d) { return d.dy; })
+                .attr("width", sankey.nodeWidth())
+                .style("fill", function (d) { return d.color = color(d.name.replace(/ .*/, "")); })
+                .style("stroke", function (d) { return d3.rgb(d.color).darker(2); })
+                // Add hover text
+                .append("title")
+                .text(function (d) { return d.name + "\n" + "There is " + d.value + " stuff in this node"; });
+
+            // add in the title for the nodes
+            node
+                .append("text")
+                .attr("x", -6)
+                .attr("y", function (d) { return d.dy / 2; })
+                .attr("dy", ".35em")
+                .attr("text-anchor", "end")
+                .attr("transform", null)
+                .text(function (d) { return d.name; })
+                .filter(function (d) { return d.x < width / 2; })
+                .attr("x", 6 + sankey.nodeWidth())
+                .attr("text-anchor", "start");
+            
+            // set link color
+            svg.selectAll(".link").style("stroke", function(d){return d.source.color;}); 
+
+            // the function for moving the nodes
+            function dragmove(d) {
+                d3.select(this)
+                    .attr("transform",
+                        "translate("
+                        + d.x + ","
+                        + (d.y = Math.max(
+                            0, Math.min(height - d.dy, d3.event.y))
+                        ) + ")");
+                sankey.relayout();
+                link.attr("d", sankey.link());
+            }
+
+        }
+
+    </script>
+</body>

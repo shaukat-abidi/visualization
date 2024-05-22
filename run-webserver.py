@@ -8,6 +8,10 @@ app = Flask(__name__)
 def index():
     return "<p>Hello!</p>"
 
+@app.route('/observableplot')
+def observableplot():
+    return render_template('observablePlot-v3.html')
+
 @app.route('/animatedTreemap')
 def animatedTreemap():
     return render_template('animatedTreemap.html')
@@ -30,7 +34,7 @@ def forceDirectedGraph():
 
 @app.route('/sankeyComponent')
 def sankeyComponent():
-    return render_template('sankeyPlot.html')
+    return render_template('animatedSankeyPlot.html')
 
 @app.route('/sliderdropdown')
 def sliderdropdown():
@@ -46,7 +50,7 @@ def leafletd3():
 
 @app.route('/test')
 def test():
-    return render_template('mapboxgl.html')
+    return render_template('test.html')
 
 @app.route('/data/<path:filename>')
 def download_file(filename):
@@ -54,14 +58,14 @@ def download_file(filename):
 
 @app.route('/jsondata')
 def get_jsondata():
-    with open('static/sankeyDataMed.json') as json_file:
+    with open('static/sankeyDataMedYearly.json') as json_file:
         data = json.load(json_file)
     return jsonify(data)
 
 @app.route('/csvdata')
 def get_csvdata():
     data = []
-    with open('static/energy.csv', newline='', encoding='utf-8') as csvfile:
+    with open('static/mh_data.csv', newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             data.append(row)

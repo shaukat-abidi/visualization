@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+    <div id="myplot"></div>
+</head>
+
+<body>
+    <script type="module">
+
+        //const plot = Plot.rectY({length: 10000}, Plot.binX({y: "count"}, {x: Math.random})).plot();
+        var csvData;
+
+        var lastDefined = ({
+            reduceIndex(I, X) {
+                for (let i = I.length - 1; i >= 0; --i) {
+                    const x = X[I[i]];
+                    if (x != null) {
+                        return x;
+                    }
+                }
+            }
+        })
+
+        d3.csv("/data/nations.csv").then(nations => {
+            console.log(nations);
+
+            //Do the plotting
+
+            const doplot = Plot.plot({
+                width: 1152,
+                height: 600,
+                grid: true,
+                x: { type: "log", domain: [200, 100e3] },
+                y: { domain: [15, 85], ticks: 8 },
+                color: { legend: true },
+                marks: [
+                    Plot.dot(nations, Plot.groupZ({
+                        x: lastDefined,
+                        y: lastDefined,
+                        r: lastDefined,
+                        stroke: "last"
+                    }, {
+                        filter: (d) => d.year <= year,
+                        x: "income",
+                        y: "lifeExpectancy",
+                        r: "population",
+                        stroke: "region",
+                        z: "name"
+                    }))
+                ]
+            })
+
+            const div = document.querySelector("#myplot");
+            div.append(doplot);
+
+
+
+
+        }).catch(error => {
+            console.error('Error loading CSV file:', error);
+        });
+
+        //const div = document.querySelector("#myplot");
+        //div.append(plot);
+
+    </script>
+</body>

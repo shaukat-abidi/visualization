@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+    <div id="myplot"></div>
+</head>
+
+<body>
+    <script type="module">
+
+        // Define the delimiter used in your CSV file (e.g., comma, tab, etc.)
+        const delimiter = ',';
+
+        // Create a DSV parser for CSV with the specified delimiter
+        const parser = d3.dsvFormat(delimiter);
+
+        // Code dependency
+        var lastDefined = ({
+            reduceIndex(I, X) {
+                for (let i = I.length - 1; i >= 0; --i) {
+                    const x = X[I[i]];
+                    if (x != null) {
+                        return x;
+                    }
+                }
+            }
+        })
+
+        // Use fetch or another method to asynchronously load the CSV file
+        fetch("/data/nations.csv")
+            .then(response => response.text())
+            .then(csvText => {
+                // Parse the CSV text using the DSV parser
+                const data = d3.csvParse(csvText, (row, i, columns) => {
+                    // Convert each column value to the appropriate data type
+                    columns.forEach(column => {
+                        row[column] = +row[column] || row[column]; // Convert to number if possible
+                    });
+                    return row;
+                });
+
+                // Data processing and visualization code here
+                console.log(data); // Print the parsed typed CSV data to the console
+
+                //Plotting code
+                //Do the plotting
+
+                const doplot = Plot.plot({
+                    width: 1152,
+                    height: 600,
+                    grid: true,
+                    x: { type: "log", domain: [200, 100e3] },
+                    y: { domain: [15, 85], ticks: 8 },
+                    color: { legend: true },
+                    marks: [
+                        Plot.dot(data, Plot.groupZ({
+                            x: lastDefined,
+                            y: lastDefined,
+                            r: lastDefined,
+                            stroke: "last"
+                        }, {
+                            filter: (d) => d.year <= year,
+                            x: "income",
+                            y: "lifeExpectancy",
+                            r: "population",
+                            stroke: "region",
+                            z: "name"
+                        }))
+                    ]
+                })
+
+                const div = document.querySelector("#myplot");
+                div.append(doplot);
+
+
+            })
+            .catch(error => {
+                // Handle any errors that occur during data loading
+                console.error('Error loading CSV file:', error);
+            });
+
+
+    </script>
+</body>
