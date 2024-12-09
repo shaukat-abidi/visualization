@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+
+
+<!-- Load d3.js -->
+<script src=https://d3js.org/d3.v4.js></script>
+
+
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+
+
+<script>
+
+    // set the dimensions and margins of the graph
+    var margin = { top: 10, right: 20, bottom: 30, left: 50 },
+        width = 1800 - margin.left - margin.right,
+        height = 800 - margin.top - margin.bottom;
+
+
+
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+    //Read the data
+    //"country","continent","lifeExp","pop","gdpPercap"
+    //"Afghanistan","Asia",43.828,31889923,2000
+    //"India","Asia",64.698,1110396331,2000
+
+
+
+    var data_1970 = [
+        { diagnosis: "MentalDisorder", totcases: 50, year: 1970 },
+        { diagnosis: "Schizophrenia", totcases: 500, year: 1970 },
+        { diagnosis: "AcuteStressReaction", totcases: 150, year: 1970 },
+        { diagnosis: "DepressiveEpisode", totcases: 250, year: 1970 },
+        { diagnosis: "SuicidalIdeation", totcases: 3650, year: 1970 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 2550, year: 1970 },
+        { diagnosis: "Anxiety", totcases: 450, year: 1970 },
+        { diagnosis: "AlcoholAbuse", totcases: 950, year: 1970 },
+        { diagnosis: "Dysthymia", totcases: 5000, year: 1970 },
+        { diagnosis: "Crisis", totcases: 2500, year: 1970 },
+    ];
+
+
+    var data_1980 = [
+        { diagnosis: "MentalDisorder", totcases: 1792, year: 1980 },
+        { diagnosis: "Schizophrenia", totcases: 1825, year: 1980 },
+        { diagnosis: "AcuteStressReaction", totcases: 513, year: 1980 },
+        { diagnosis: "DepressiveEpisode", totcases: 3765, year: 1980 },
+        { diagnosis: "SuicidalIdeation", totcases: 4679, year: 1980 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 1720, year: 1980 },
+        { diagnosis: "Anxiety", totcases: 2870, year: 1980 },
+        { diagnosis: "AlcoholAbuse", totcases: 314, year: 1980 },
+        { diagnosis: "Dysthymia", totcases: 3186, year: 1980 },
+        { diagnosis: "Crisis", totcases: 3700, year: 1980 }
+    ];
+
+
+
+    var data_1985 = [
+        { diagnosis: "MentalDisorder", totcases: 608, year: 1985 },
+        { diagnosis: "Schizophrenia", totcases: 62, year: 1985 },
+        { diagnosis: "AcuteStressReaction", totcases: 4558, year: 1985 },
+        { diagnosis: "DepressiveEpisode", totcases: 3024, year: 1985 },
+        { diagnosis: "SuicidalIdeation", totcases: 4870, year: 1985 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 4998, year: 1985 },
+        { diagnosis: "Anxiety", totcases: 2466, year: 1985 },
+        { diagnosis: "AlcoholAbuse", totcases: 1238, year: 1985 },
+        { diagnosis: "Dysthymia", totcases: 582, year: 1985 },
+        { diagnosis: "Crisis", totcases: 3123, year: 1985 }
+    ];
+
+
+
+    var data_1990 = [
+        { diagnosis: "MentalDisorder", totcases: 2386, year: 1990 },
+        { diagnosis: "Schizophrenia", totcases: 3565, year: 1990 },
+        { diagnosis: "AcuteStressReaction", totcases: 4352, year: 1990 },
+        { diagnosis: "DepressiveEpisode", totcases: 258, year: 1990 },
+        { diagnosis: "SuicidalIdeation", totcases: 1689, year: 1990 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 2762, year: 1990 },
+        { diagnosis: "Anxiety", totcases: 2994, year: 1990 },
+        { diagnosis: "AlcoholAbuse", totcases: 4323, year: 1990 },
+        { diagnosis: "Dysthymia", totcases: 1741, year: 1990 },
+        { diagnosis: "Crisis", totcases: 912, year: 1990 }
+    ];
+
+
+
+    var data_2000 = [
+        { diagnosis: "MentalDisorder", totcases: 3881, year: 2000 },
+        { diagnosis: "Schizophrenia", totcases: 741, year: 2000 },
+        { diagnosis: "AcuteStressReaction", totcases: 1076, year: 2000 },
+        { diagnosis: "DepressiveEpisode", totcases: 4710, year: 2000 },
+        { diagnosis: "SuicidalIdeation", totcases: 2260, year: 2000 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 4326, year: 2000 },
+        { diagnosis: "Anxiety", totcases: 1583, year: 2000 },
+        { diagnosis: "AlcoholAbuse", totcases: 1669, year: 2000 },
+        { diagnosis: "Dysthymia", totcases: 1512, year: 2000 },
+        { diagnosis: "Crisis", totcases: 1097, year: 2000 }
+    ];
+
+    var data_2005 = [
+        { diagnosis: "MentalDisorder", totcases: 1498, year: 2005 },
+        { diagnosis: "Schizophrenia", totcases: 513, year: 2005 },
+        { diagnosis: "AcuteStressReaction", totcases: 4545, year: 2005 },
+        { diagnosis: "DepressiveEpisode", totcases: 3579, year: 2005 },
+        { diagnosis: "SuicidalIdeation", totcases: 2650, year: 2005 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 3075, year: 2005 },
+        { diagnosis: "Anxiety", totcases: 824, year: 2005 },
+        { diagnosis: "AlcoholAbuse", totcases: 2777, year: 2005 },
+        { diagnosis: "Dysthymia", totcases: 2086, year: 2005 },
+        { diagnosis: "Crisis", totcases: 4968, year: 2005 }
+    ];
+
+    var data_2010 = [
+        { diagnosis: "MentalDisorder", totcases: 4235, year: 2010 },
+        { diagnosis: "Schizophrenia", totcases: 4070, year: 2010 },
+        { diagnosis: "AcuteStressReaction", totcases: 95, year: 2010 },
+        { diagnosis: "DepressiveEpisode", totcases: 1128, year: 2010 },
+        { diagnosis: "SuicidalIdeation", totcases: 2729, year: 2010 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 1824, year: 2010 },
+        { diagnosis: "Anxiety", totcases: 4269, year: 2010 },
+        { diagnosis: "AlcoholAbuse", totcases: 4805, year: 2010 },
+        { diagnosis: "Dysthymia", totcases: 4286, year: 2010 },
+        { diagnosis: "Crisis", totcases: 180, year: 2010 }
+    ];
+
+    var data_2015 = [
+        { diagnosis: "MentalDisorder", totcases: 83, year: 2015 },
+        { diagnosis: "Schizophrenia", totcases: 3632, year: 2015 },
+        { diagnosis: "AcuteStressReaction", totcases: 230, year: 2015 },
+        { diagnosis: "DepressiveEpisode", totcases: 1459, year: 2015 },
+        { diagnosis: "SuicidalIdeation", totcases: 2367, year: 2015 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 2674, year: 2015 },
+        { diagnosis: "Anxiety", totcases: 4503, year: 2015 },
+        { diagnosis: "AlcoholAbuse", totcases: 2893, year: 2015 },
+        { diagnosis: "Dysthymia", totcases: 3680, year: 2015 },
+        { diagnosis: "Crisis", totcases: 518, year: 2015 }
+
+    ];
+
+    var data_2020 = [
+        { diagnosis: "MentalDisorder", totcases: 4576, year: 2020 },
+        { diagnosis: "Schizophrenia", totcases: 4584, year: 2020 },
+        { diagnosis: "AcuteStressReaction", totcases: 2365, year: 2020 },
+        { diagnosis: "DepressiveEpisode", totcases: 3849, year: 2020 },
+        { diagnosis: "SuicidalIdeation", totcases: 197, year: 2020 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 1547, year: 2020 },
+        { diagnosis: "Anxiety", totcases: 158, year: 2020 },
+        { diagnosis: "AlcoholAbuse", totcases: 3893, year: 2020 },
+        { diagnosis: "Dysthymia", totcases: 2042, year: 2020 },
+        { diagnosis: "Crisis", totcases: 2022, year: 2020 }
+    ];
+
+    var data_2021 = [
+        { diagnosis: "MentalDisorder", totcases: 2642, year: 2021 },
+        { diagnosis: "Schizophrenia", totcases: 1661, year: 2021 },
+        { diagnosis: "AcuteStressReaction", totcases: 2921, year: 2021 },
+        { diagnosis: "DepressiveEpisode", totcases: 4750, year: 2021 },
+        { diagnosis: "SuicidalIdeation", totcases: 4228, year: 2021 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 3455, year: 2021 },
+        { diagnosis: "Anxiety", totcases: 3765, year: 2021 },
+        { diagnosis: "AlcoholAbuse", totcases: 2667, year: 2021 },
+        { diagnosis: "Dysthymia", totcases: 1626, year: 2021 },
+        { diagnosis: "Crisis", totcases: 1883, year: 2021 }
+    ];
+
+    var data_2022 = [
+        { diagnosis: "MentalDisorder", totcases: 2495, year: 2022 },
+        { diagnosis: "Schizophrenia", totcases: 2719, year: 2022 },
+        { diagnosis: "AcuteStressReaction", totcases: 2804, year: 2022 },
+        { diagnosis: "DepressiveEpisode", totcases: 3209, year: 2022 },
+        { diagnosis: "SuicidalIdeation", totcases: 2466, year: 2022 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 1148, year: 2022 },
+        { diagnosis: "Anxiety", totcases: 4593, year: 2022 },
+        { diagnosis: "AlcoholAbuse", totcases: 810, year: 2022 },
+        { diagnosis: "Dysthymia", totcases: 199, year: 2022 },
+        { diagnosis: "Crisis", totcases: 4792, year: 2022 }
+    ];
+
+    var data_2023 = [
+        { diagnosis: "MentalDisorder", totcases: 1139, year: 2023 },
+        { diagnosis: "Schizophrenia", totcases: 585, year: 2023 },
+        { diagnosis: "AcuteStressReaction", totcases: 772, year: 2023 },
+        { diagnosis: "DepressiveEpisode", totcases: 1845, year: 2023 },
+        { diagnosis: "SuicidalIdeation", totcases: 3762, year: 2023 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 615, year: 2023 },
+        { diagnosis: "Anxiety", totcases: 86, year: 2023 },
+        { diagnosis: "AlcoholAbuse", totcases: 775, year: 2023 },
+        { diagnosis: "Dysthymia", totcases: 2567, year: 2023 },
+        { diagnosis: "Crisis", totcases: 3728, year: 2023 }
+    ];
+
+    var data_2024 = [
+        { diagnosis: "MentalDisorder", totcases: 2257, year: 2024 },
+        { diagnosis: "Schizophrenia", totcases: 3593, year: 2024 },
+        { diagnosis: "AcuteStressReaction", totcases: 3803, year: 2024 },
+        { diagnosis: "DepressiveEpisode", totcases: 179, year: 2024 },
+        { diagnosis: "SuicidalIdeation", totcases: 4040, year: 2024 },
+        { diagnosis: "DrugInducedPsychosis", totcases: 3379, year: 2024 },
+        { diagnosis: "Anxiety", totcases: 89, year: 2024 },
+        { diagnosis: "AlcoholAbuse", totcases: 3765, year: 2024 },
+        { diagnosis: "Dysthymia", totcases: 491, year: 2024 },
+        { diagnosis: "Crisis", totcases: 2336, year: 2024 }
+
+    ];
+
+
+    // Add a scale for bubble color
+    var myColor = d3.scaleOrdinal()
+        .domain(["MentalDisorder", "Schizophrenia", "AcuteStressReaction", "DepressiveEpisode", "SuicidalIdeation", "DrugInducedPsychosis", "Anxiety", "AlcoholAbuse", "Dysthymia", "Crisis"])
+        .range(["maroon", "lime", "blue", "fuchsia", "dodgerblue", "yellow", "darkgray", "greenyellow", "lightskyblue", "brown"]);
+
+
+    // Add X axis
+    var x = d3.scaleLinear()
+        .domain([1970, 2050])
+        .range([0, width]);
+
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).tickFormat(d => d3.format('')(d)));
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+        .domain([40, 5500])
+        .range([height, 0]);
+
+
+    svg.append("g")
+        .call(d3.axisLeft(y));
+ 
+
+
+    // Define the number of grid lines and spacing
+    const numGridLinesX = 10;
+    const numGridLinesY = 8;
+    const xSpacing = width / numGridLinesX;
+    const ySpacing = height / numGridLinesY;
+
+
+
+    // Append vertical grid lines
+    for (let i = 1; i < numGridLinesX; i++) {
+        svg.append('line')
+            .attr('x1', i * xSpacing)
+            .attr('y1', 0)
+            .attr('x2', i * xSpacing)
+            .attr('y2', height)
+            .style('stroke', '#ddd')  // Color of the grid lines
+            .style('stroke-width', 2.0);
+    }
+
+
+
+    // Append horizontal grid lines
+    for (let i = 1; i < numGridLinesY; i++) {
+        svg.append('line')
+            .attr('x1', 0)
+            .attr('y1', i * ySpacing)
+            .attr('x2', width)
+            .attr('y2', i * ySpacing)
+            .style('stroke', '#ddd')  // Color of the grid lines
+            .style('stroke-width', 2.0);
+    }
+
+
+
+    // Add a scale for bubble size
+    var z = d3.scaleLinear()
+        .domain([40, 9000])
+        .range([20, 60]);
+
+
+    // Add dots
+    svg.append('g')
+        .selectAll("dot")
+        .data(data_1970)
+        .enter()
+        .append("circle")
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+    //Move the circles
+    const animationDuration = 10000;
+    const animationDelay = 1000;
+
+    svg
+        .selectAll("circle")
+        .data(data_1980)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+
+    svg
+        .selectAll("circle")
+        .data(data_1985)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+    svg
+        .selectAll("circle")
+        .data(data_1990)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+    svg
+        .selectAll("circle")
+        .data(data_2000)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+    svg
+        .selectAll("circle")
+        .data(data_2005)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+    svg
+        .selectAll("circle")
+        .data(data_2010)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+    svg
+        .selectAll("circle")
+        .data(data_2015)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+    svg
+        .selectAll("circle")
+        .data(data_2020)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+
+    svg
+        .selectAll("circle")
+        .data(data_2021)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+
+    svg
+        .selectAll("circle")
+        .data(data_2022)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+
+    svg
+        .selectAll("circle")
+        .data(data_2023)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+
+    svg
+        .selectAll("circle")
+        .data(data_2024)
+        .transition()
+        .delay(animationDelay)
+        .duration(animationDuration)
+        .attr("cx", function (d) { return x(d.year); })
+        .attr("cy", function (d) { return y(d.totcases); })
+        .attr("r", function (d) { return z(d.totcases); })
+        .style("fill", function (d) { return myColor(d.diagnosis); })
+        .style("opacity", "0.9")
+        .attr("stroke", "black");
+
+
+    // Add one dot in the legend for each name.
+    var size = 60;
+    //var allgroups = ["Asia", "Europe", "Americas", "Africa", "Oceania"]
+    var allgroups = ["MentalDisorder", "Schizophrenia", "AcuteStressReaction", "DepressiveEpisode", "SuicidalIdeation", "DrugInducedPsychosis", "Anxiety", "AlcoholAbuse", "Dysthymia", "Crisis"];
+
+
+
+    svg.selectAll("myrect")
+        .data(allgroups)
+        .enter()
+        .append("circle")
+        .attr("cx", width - 150)
+        .attr("cy", function (d, i) { return 10 + i * (size + 5) }) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("r", 14)
+        .style("fill", function (d) { return myColor(d) });
+
+
+
+    // Add labels beside legend dots
+    svg.selectAll("mylabels")
+        .data(allgroups)
+        .enter()
+        .append("text")
+        .attr("x", width - 80 - size * .8)
+        .attr("y", function (d, i) { return 10 + i * (size + 5) }) // 100 is where the first dot appears. 25 is the distance between dots
+        .style("fill", function (d) { return "black" })
+        .text(function (d) { return d })
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle")
+        .style("font-size", "18");//.style("font-weight", "bold");
+
+</script>

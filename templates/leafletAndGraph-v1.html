@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaflet with D3 Bar Graph</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" media="screen" title="leaflet">
+  <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js" charset="utf-8"></script>
+  <script src="https://unpkg.com/leaflet.minichart/dist/leaflet.minichart.min.js" charset="utf-8"></script>
+
+  <style>
+    #map {
+      height: 800px;
+    }
+  </style>
+</head>
+<body>
+
+    <div id="map"></div>
+  <script>
+  var center = [-33.92029511260551, 150.93219263455404];
+  
+    var mymap = L.map('map').setView(center, 13);
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mymap);
+
+    // Let us generate fake data
+    function fakeData() {
+    return [Math.random(), Math.random()];
+    }
+
+    // Create a barchart
+    var myBarChart = L.minichart(center, {data: fakeData(), labels: ["A", "B"]});
+    mymap.addLayer(myBarChart);
+
+    // Update data every 2 seconds
+    setInterval(function() {
+    myBarChart.setOptions({data: fakeData()})
+    }, 2000);
+
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Data Visualization Example</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <script>
+        // JavaScript code will go here
+        document.addEventListener('DOMContentLoaded', async function () {
+            const keys = d3.range(1790, 2000, 10);
+
+            const regionsPromise = d3.csv("/data/census-regions.csv");
+            const statesPromise = d3.tsv("/data/population.tsv");
+
+            const [regions, states] = await Promise.all([regionsPromise, statesPromise]).then(([regions, states]) => [
+                regions,
+                states.slice(1).map((d) => ({
+                    name: d[""], // Assuming the state name is in an empty column label
+                    values: keys.map(key => +d[key].replace(/,/g, "")) // Parse comma-separated numbers
+                }))
+            ]);
+
+            const regionByState = new Map(regions.map(d => [d.State, d.Region]));
+            const divisionByState = new Map(regions.map(d => [d.State, d.Division]));
+
+            const data = {
+                keys,
+                group: d3.group(states, d => regionByState.get(d.name), d => divisionByState.get(d.name))
+            };
+
+            // Now, 'data' is available to be used in your D3 visualization
+            console.log(data);
+        });
+
+    </script>
+</body>
+
+</html>

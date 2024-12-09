@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+
+  <!-- Load d3.js and the geo projection plugin -->
+  <script src="https://d3js.org/d3.v6.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+  <!-- Load Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6/dist/leaflet.css" media="screen" title="leaflet">
+  <script src="https://unpkg.com/leaflet@1.6/dist/leaflet.js" charset="utf-8"></script>
+
+  <style>
+    #mapid {
+      height: 400px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- Create an element where the map will take place -->
+  <div id="mapid"></div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+
+</body>
+
+</html>

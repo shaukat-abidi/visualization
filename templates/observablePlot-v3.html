@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Scrubber Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+    <style>
+        /* Add any CSS styling here */
+    </style>
+</head>
+
+<body>
+    <div id="myplot"></div>
+    <div id="slider-container">
+        <!-- Slider container -->
+    </div>
+
+    <script type="module">
+        import { Scrubber } from 'https://cdn.jsdelivr.net/gh/observablehq/inputs@0.12.0/dist/inputs.umd.min.js';
+
+
+
+        
+        // Code dependency
+        var lastDefined = ({
+            reduceIndex(I, X) {
+                for (let i = I.length - 1; i >= 0; --i) {
+                    const x = X[I[i]];
+                    if (x != null) {
+                        return x;
+                    }
+                }
+            }
+        })
+
+
+        // Define the delimiter used in your CSV file (e.g., comma, tab, etc.)
+        const delimiter = ',';
+
+        // Create a DSV parser for CSV with the specified delimiter
+        const parser = d3.dsvFormat(delimiter);
+
+        // Define the path to your CSV file
+        const csvFilePath = '/data/nations.csv';
+
+        // Fetch CSV data and create the plot
+        async function fetchDataAndCreatePlot() {
+            try {
+                const response = await fetch(csvFilePath);
+                const csvText = await response.text();
+                const data = d3.csvParse(csvText, (row, i, columns) => {
+                    columns.forEach(column => {
+                        row[column] = +row[column] || row[column];
+                    });
+                    return row;
+                });
+
+                // Create a container for the plot
+                const plotContainer = document.querySelector("#myplot");
+
+                // print data
+                console.log(data);
+
+                // Create a plot
+                const plot = Plot.plot({
+                    width: 1152,
+                    height: 600,
+                    grid: true,
+                    x: { type: "log", domain: [200, 100e3] },
+                    y: { domain: [15, 85], ticks: 8 },
+                    color: { legend: true },
+                    marks: [
+                        Plot.dot(data, Plot.groupZ({
+                            x: lastDefined,
+                            y: lastDefined,
+                            r: lastDefined,
+                            stroke: "last"
+                        }, {
+                            filter: (d) => d.year <= year,
+                            x: "income",
+                            y: "lifeExpectancy",
+                            r: "population",
+                            stroke: "region",
+                            z: "name"
+                        }))
+                    ]
+                });
+
+                // Append the plot to the container
+                plotContainer.appendChild(plot);
+
+                // Create a slider for selecting the year
+                const sliderContainer = document.querySelector("#slider-container");
+                const yearScrubber = Scrubber(d3.sort(d3.union(data.map(d => d.year))), {
+                    loop: false,
+                    delay: 1000 / 24
+                });
+                sliderContainer.appendChild(yearScrubber);
+
+                // Event listener for updating the plot when the year changes
+                yearScrubber.addEventListener('input', () => {
+                    // Get the selected year from the slider
+                    const selectedYear = parseInt(yearScrubber.value);
+
+                    // Filter data based on the selected year
+                    const filteredData = data.filter(d => d.year <= selectedYear);
+
+                    // Update the plot with the filtered data
+                    plot.marks[0].data = filteredData;
+                    plot.redraw();
+                });
+            } catch (error) {
+                console.error('Error loading CSV file:', error);
+            }
+        }
+
+        // Fetch CSV data and create the plot
+        fetchDataAndCreatePlot();
+    </script>
+</body>
+
+</html>

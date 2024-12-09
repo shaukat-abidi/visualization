@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <!-- Create a div where the graph will take place -->
+    <div id="year_placeholder"></div>
+    <div id="my_dataviz"></div>
+
+    <!-- Add style to links or they won't appear properly-->
+    <style>
+        #year_placeholder {
+            color: blue;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;  
+        }
+
+       
+    </style>
+</head>
+
+<body>
+    <script>
+        // Hold the data
+        var csvData;
+
+        // My Custom event
+        var onDataLoadEvent = new Event("DataLoaded");
+
+        // Call the data
+        var csvCall = d3.csv("/data/mh_data.csv", function(error, data){
+            if (error) {
+                throw error;
+            }
+            // Save the data
+            csvData = data;
+            // Dispatch the event 
+            window.dispatchEvent(onDataLoadEvent);
+        });
+
+        // See the type 
+        console.log("csvCall type: ", csvCall);
+
+        // Trigger event
+        window.addEventListener("DataLoaded", function(){
+            your_first_function();
+        });
+
+        function your_first_function(){
+            var datarow = csvData[0];
+            console.log(datarow);
+            console.log(typeof datarow);
+            //console.log(window);
+
+            //Filter object
+            selectYear = '2008';
+            selectMonth = '5';
+            filteredData = csvData.filter( item => (item.reg_year===selectYear && item.reg_month===selectMonth) );
+            console.log(filteredData);
+        }
+
+    </script>
+</body>

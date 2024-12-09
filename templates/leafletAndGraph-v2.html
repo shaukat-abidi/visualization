@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaflet with D3 Bar Graph</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" media="screen" title="leaflet">
+  <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js" charset="utf-8"></script>
+  <script src="https://unpkg.com/leaflet.minichart/dist/leaflet.minichart.min.js" charset="utf-8"></script>
+  <script src=https://d3js.org/d3.v4.js></script>
+
+  <style>
+    #map {
+      height: 800px;
+      z-index: 1; /* Set a lower z-index for the map */
+    }
+    
+    #barChartlegends {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: navy;
+      padding: 15px;
+      font-weight: bold;
+      z-index: 2; /* Set a higher z-index for the map */
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div id="map"></div>
+  <div id="barChartlegends">
+    <!-- Add your legend content here -->
+    <span style="color: chartreuse;">---- English </span><br>
+    <span style="color: magenta;">---- Arabic </span><br>
+    <span style="color: yellow;">---- Chinese </span><br>
+    <!-- Add more legends as needed -->
+  </div>
+  <select id="year" onchange="updateMap()">
+    <option value="2020">2020</option>
+    <option value="2021">2021</option>
+  </select>
+
+  <script>
+    /* ******************************* */
+    /* IMPORTANT NOTE: FAKE DATA USED */
+    /* ******************************* */
+    var data = [
+      { "year": 2020, "country": "Liverpool", "English": 100, "Arabic": 200, "Chinese": 300, "lat": -33.91704866265614, "lon": 150.928225652454 },
+      { "year": 2020, "country": "Bowral", "English": 300, "Arabic": 100, "Chinese": 100, "lat": -34.48464091526672, "lon": 150.42341533952225 },
+      { "year": 2020, "country": "Camden", "English": 400, "Arabic": 200, "Chinese": 300, "lat": -34.062639676540556, "lon": 150.69371956834198 },
+      { "year": 2020, "country": "Bankstown", "English": 200, "Arabic": 500, "Chinese": 400, "lat": -33.93238153294529, "lon": 151.02075206595796 },
+      { "year": 2020, "country": "Fairfield", "English": 150, "Arabic": 200, "Chinese": 300, "lat": -33.855891859707484, "lon": 150.907145472131 },
+      { "year": 2021, "country": "Liverpool", "English": 200, "Arabic": 300, "Chinese": 400, "lat": -33.91704866265614, "lon": 150.928225652454 },
+      { "year": 2021, "country": "Bowral", "English": 400, "Arabic": 200, "Chinese": 100, "lat": -34.48464091526672, "lon": 150.42341533952225 },
+      { "year": 2021, "country": "Camden", "English": 500, "Arabic": 300, "Chinese": 350, "lat": -34.062639676540556, "lon": 150.69371956834198 },
+      { "year": 2021, "country": "Bankstown", "English": 600, "Arabic": 600, "Chinese": 450, "lat": -33.93238153294529, "lon": 151.02075206595796 },
+      { "year": 2021, "country": "Fairfield", "English": 250, "Arabic": 300, "Chinese": 300, "lat": -33.855891859707484, "lon": 150.907145472131 }
+    ];
+
+
+    const maxValue = 80;
+    var center = [-34.131787519856324, 150.41986407679622];
+    var scaleData = d3.scaleLinear()
+      .domain([100, 650])
+      .range([0, maxValue]);
+
+    var mymap = L.map('map').setView(center, 10);
+    //var tiles = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    //tiles.addTo(mymap);
+
+    // Get Free TileLayers from: https://leaflet-extras.github.io/leaflet-providers/preview/ 
+    var Stadia_AlidadeSmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
+      minZoom: 0,
+      maxZoom: 20,
+      attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      ext: 'png'
+    });
+    Stadia_AlidadeSmoothDark.addTo(mymap);
+
+
+    var charts = {};
+    const selYear = 2020;
+    filteredData = data.filter(item => item.year == selYear);
+    console.log(filteredData);
+    for (var i = 0; i < filteredData.length; i++) {
+      d = filteredData[i];
+      var unscaledData = [d.English, d.Arabic, d.Chinese];
+      var plotScaledData = [scaleData(d.English), scaleData(d.Arabic), scaleData(d.Chinese)];
+      charts[d.country] = L.minichart(
+        [d.lat, d.lon],
+        {
+          data: plotScaledData,
+          labels: unscaledData.map(String),
+          colors: ['chartreuse', 'magenta', 'yellow'],
+          maxValues: maxValue
+        }
+      );
+      mymap.addLayer(charts[d.country]);
+    }
+
+
+    function updateMap() {
+      var selYear = document.getElementById("year").value;
+      filteredData = data.filter(item => item.year == selYear);
+      console.log(filteredData);
+      for (var i = 0; i < filteredData.length; i++) {
+        d = filteredData[i];
+        var unscaledData = [d.English, d.Arabic, d.Chinese];
+        var plotScaledData = [scaleData(d.English), scaleData(d.Arabic), scaleData(d.Chinese)];
+
+        charts[d.country].setOptions(
+          {
+            data: plotScaledData,
+            labels: unscaledData.map(String),
+            colors: ['chartreuse', 'magenta', 'yellow']
+          }
+        );
+      }
+    };
+
+
+
+
+  </script>
+
+</body>
+
+</html>
